@@ -1,0 +1,55 @@
+{
+	"name": "bongocat-converter",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"lint": "biome check --write src",
+		"preview": "vite preview",
+		"preinstall": "npx only-allow pnpm",
+		"prepare": "simple-git-hooks"
+	},
+	"dependencies": {
+		"@heroui/react": "2.8.0-beta.7",
+		"@heroui/system": "2.4.17-beta.0",
+		"@heroui/theme": "2.4.17-beta.0",
+		"@heroui/use-theme": "2.1.9-beta.1",
+		"ahooks": "^3.8.5",
+		"browser-fs-access": "^0.38.0",
+		"es-toolkit": "^1.39.3",
+		"framer-motion": "11.15.0",
+		"merge-images": "^2.0.0",
+		"react": "18.3.1",
+		"react-dom": "18.3.1",
+		"tailwind-variants": "^1.0.0",
+		"tailwindcss": "^4.1.10"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.0.0",
+		"@commitlint/cli": "^19.8.1",
+		"@commitlint/config-conventional": "^19.8.1",
+		"@tailwindcss/vite": "^4.1.10",
+		"@types/merge-images": "^1.2.4",
+		"@types/node": "20.5.7",
+		"@types/react": "18.3.3",
+		"@types/react-dom": "18.3.0",
+		"@vitejs/plugin-react": "4.4.1",
+		"globals": "16.0.0",
+		"lint-staged": "^16.1.2",
+		"simple-git-hooks": "^2.13.0",
+		"typescript": "5.6.3",
+		"vite": "5.2.0",
+		"vite-tsconfig-paths": "4.3.2"
+	},
+	"simple-git-hooks": {
+		"commit-msg": "npx --no-install commitlint -e",
+		"pre-commit": "npx lint-staged"
+	},
+	"lint-staged": {
+		"**.{ts,tsx,json}": [
+			"biome check --no-errors-on-unmatched"
+		]
+	}
+}
