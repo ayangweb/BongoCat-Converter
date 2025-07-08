@@ -1,15 +1,19 @@
+import type { keyMap } from "@/utils/keyMap";
+
+type KeyCode = keyof typeof keyMap;
+
 export type StandardConfig = {
-  hand: number[][];
-  keyboard: number[][];
+  hand: KeyCode[][];
+  keyboard: KeyCode[][];
 };
 
 export type SharedConfig = {
-  lefthand: number[][];
-  righthand: number[][];
-  keyboard: number[][];
+  lefthand: KeyCode[][];
+  righthand: KeyCode[][];
+  keyboard: KeyCode[][];
 };
 
-export interface Config {
+export interface ConfigSchema {
   standard: StandardConfig;
   keyboard: SharedConfig;
   gamepad: SharedConfig;
