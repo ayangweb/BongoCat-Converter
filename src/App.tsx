@@ -44,9 +44,7 @@ const App = () => {
         </h1>
 
         <p className="mx-auto max-w-2xl text-foreground-500 text-lg">
-          这个工具可以帮助你将 {LEGACY_APP_NAME} 应用中的模型转换为兼容{" "}
-          {APP_NAME}
-          的格式，并提供强大的图片合成功能。
+          {`这个工具可以帮助你将 ${LEGACY_APP_NAME} 应用中的模型转换为兼容 ${APP_NAME} 的格式，并提供强大的图片合成功能。`}
         </p>
 
         <div className="my-8 flex gap-6">

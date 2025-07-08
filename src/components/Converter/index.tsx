@@ -258,8 +258,7 @@ const Converter = () => {
             <h3 className="font-semibold text-lg">选择应用文件夹</h3>
 
             <p className="text-foreground-500">
-              请选择完整的 {LEGACY_APP_NAME} 应用文件夹，其子目录中应包含{" "}
-              {CONFIG_FILE_NAME} 文件。
+              {`请选择完整的 ${LEGACY_APP_NAME} 应用文件夹，其子目录中应包含 ${CONFIG_FILE_NAME} 文件。`}
             </p>
           </div>
         )}
