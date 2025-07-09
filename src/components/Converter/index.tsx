@@ -4,7 +4,7 @@ import {
   type FileWithDirectoryAndFileHandle,
 } from "browser-fs-access";
 import clsx from "clsx";
-import { last, sum } from "es-toolkit";
+import { last, noop, sum } from "es-toolkit";
 import { find, map } from "es-toolkit/compat";
 import { filesize } from "filesize";
 import { Folder, FolderOpen, Gamepad2, Keyboard, Mouse, X } from "lucide-react";
@@ -27,7 +27,7 @@ import {
 } from "@/constants";
 import type { ConfigSchema } from "@/types";
 import { base64ToArrayBuffer } from "@/utils/binary";
-import { join, safeRemoveEntry, writeFile } from "@/utils/fsExtra";
+import { join, writeFile } from "@/utils/fsExtra";
 import { keyMap } from "@/utils/keyMap";
 
 interface RootDir {
@@ -115,29 +115,13 @@ const Converter = () => {
       for await (const mode of modes) {
         const outputDir = `${APP_NAME} - ${MODE_CN[mode]}`;
 
-        // 删除旧文件夹
-        await safeRemoveEntry(rootDir.handle, outputDir, { recursive: true });
+        await removeOutputDir(outputDir);
 
-        const modelHandles = handles.filter((handle) => {
-          return handle.webkitRelativePath.includes(join(mode, MODEL_DIR_NAME));
-        });
-
-        // 复制模型相关文件
-        for await (const handle of modelHandles) {
-          const originalPath = last(
-            handle.webkitRelativePath.split(MODEL_DIR_NAME),
-          )!;
-          const path = join(outputDir, originalPath);
-          const data = await handle.arrayBuffer();
-
-          await writeFile(rootDir.handle, path, data);
-        }
-
-        // 复制背景图片
-        await copyBgImage(mode, outputDir);
-
-        // 复制封面图片
-        await copyCoverImage(mode, outputDir);
+        await Promise.all([
+          copyModelFiles(mode, outputDir),
+          copyBgImage(mode, outputDir),
+          copyCoverImage(mode, outputDir),
+        ]);
 
         const keyboardHandles = handles.filter((handle) => {
           return handle.webkitRelativePath.includes(`${mode}/keyboard`);
@@ -261,6 +245,31 @@ const Converter = () => {
     }
   };
 
+  // 删除输出目录
+  const removeOutputDir = async (name: string) => {
+    await rootDir?.handle.removeEntry(name, { recursive: true }).catch(noop);
+  };
+
+  // 复制模型相关文件
+  const copyModelFiles = async (mode: string, outputDir: string) => {
+    if (!rootDir) return;
+
+    const filterHandles = handles.filter((handle) => {
+      return handle.webkitRelativePath.includes(join(mode, MODEL_DIR_NAME));
+    });
+
+    for await (const handle of filterHandles) {
+      const originalPath = last(
+        handle.webkitRelativePath.split(MODEL_DIR_NAME),
+      )!;
+      const path = join(outputDir, originalPath);
+      const data = await handle.arrayBuffer();
+
+      await writeFile(rootDir.handle, path, data);
+    }
+  };
+
+  // 复制背景图片
   const copyBgImage = async (mode: string, outputDir: string) => {
     if (!rootDir) return;
 
@@ -278,6 +287,7 @@ const Converter = () => {
     return writeFile(rootDir.handle, path, data);
   };
 
+  // 复制封面图片
   const copyCoverImage = async (mode: string, outputDir: string) => {
     if (!rootDir) return;
 

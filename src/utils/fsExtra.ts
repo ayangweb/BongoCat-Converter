@@ -1,4 +1,4 @@
-import { last, noop } from "es-toolkit";
+import { last } from "es-toolkit";
 
 export const mkdir = async (
   handle: FileSystemDirectoryHandle,
@@ -39,26 +39,6 @@ export const writeFile = async (
   }
 };
 
-export const safeRemoveEntry = async (
-  handle: FileSystemDirectoryHandle,
-  name: string,
-  options?: FileSystemRemoveOptions,
-) => {
-  await handle.removeEntry(name, options).catch(noop);
-};
-
 export const join = (...paths: string[]) => {
-  const joinPaths = paths.map((path) => {
-    if (path.endsWith("/")) {
-      return path.slice(0, -1);
-    }
-
-    if (path.startsWith("/")) {
-      return path.slice(1);
-    }
-
-    return path;
-  });
-
-  return joinPaths.join("/");
+  return paths.map((p) => p.replace(/^\/+|\/+$/g, "")).join("/");
 };
