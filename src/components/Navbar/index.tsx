@@ -6,21 +6,11 @@ import {
   NavbarContent,
   NavbarItem,
 } from "@heroui/react";
-import { ThemeProps, useTheme } from "@heroui/use-theme";
-import { Github, Moon, Sun } from "lucide-react";
+import { Github } from "lucide-react";
 import { APP_GITHUB_URL, APP_NAME } from "@/constants";
+import Theme from "./Theme";
 
 const Navbar = () => {
-  const { theme, setTheme } = useTheme();
-
-  const toggleTheme = () => {
-    if (theme === ThemeProps.LIGHT) {
-      return setTheme(ThemeProps.DARK);
-    }
-
-    setTheme(ThemeProps.LIGHT);
-  };
-
   const openGithub = () => {
     window.open(APP_GITHUB_URL);
   };
@@ -35,14 +25,7 @@ const Navbar = () => {
 
       <NavbarContent className="text-foreground-600" justify="end">
         <NavbarItem>
-          <Button
-            className="text-foreground-600"
-            isIconOnly
-            onPress={toggleTheme}
-            variant="bordered"
-          >
-            {theme === ThemeProps.LIGHT ? <Sun /> : <Moon />}
-          </Button>
+          <Theme />
         </NavbarItem>
 
         <NavbarItem>
