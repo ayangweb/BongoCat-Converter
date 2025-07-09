@@ -27,7 +27,8 @@
         "noUnusedImports": {
           "fix": "safe",
           "level": "error"
-        }
+        },
+        "useExhaustiveDependencies": "off"
       },
       "nursery": {
         "useSortedClasses": {

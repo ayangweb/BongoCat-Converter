@@ -1,183 +1,60 @@
-import {
-  addToast,
-  Button,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Divider,
-  Form,
-  Input,
-} from "@heroui/react";
+import { Button } from "@heroui/react";
+import { fileSave } from "browser-fs-access";
 import mergeImages from "merge-images";
-import { useEffect, useRef, useState } from "react";
-
-const getImageDataURL = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-};
+import { useEffect, useState } from "react";
+import { base64ToBlob } from "@/utils/binary";
+import Upload from "./Upload";
 
 const Synthesis = () => {
-  const keyboardFileRef = useRef<HTMLInputElement>(null);
-  const handFileRef = useRef<HTMLInputElement>(null);
-
-  const [keyboardFile, setKeyboardFile] = useState<File | null>(null);
-  const [handFile, setHandFile] = useState<File | null>(null);
-  const [mergedImage, setMergedImage] = useState<string>("");
+  const [keyboardFile, setKeyboardFile] = useState<File>();
+  const [handFile, setHandFile] = useState<File>();
+  const [mergeUrl, setMergeUrl] = useState<string>();
 
   useEffect(() => {
-    const handleMerge = async () => {
-      if (!keyboardFile || !handFile) {
-        addToast({
-          color: "danger",
-          title: "请同时上传键盘和手部图片",
-        });
-        return;
-      }
-
-      try {
-        const keyboardDataURL = await getImageDataURL(keyboardFile);
-        const handDataURL = await getImageDataURL(handFile);
-
-        const mergedImageData = await mergeImages([
-          { src: keyboardDataURL, x: 0, y: 0 }, // TODO: 可以添加互动调整编辑位置
-          { src: handDataURL, x: 0, y: 0 }, // TODO: 可以添加互动调整编辑位置
-        ]);
-
-        setMergedImage(mergedImageData);
-      } catch {
-        addToast({
-          color: "danger",
-          title: "合成图片时出错，请重试",
-        });
-      }
-    };
-
-    if (keyboardFile && handFile) {
-      handleMerge();
+    if (!keyboardFile || !handFile) {
+      return setMergeUrl(void 0);
     }
+
+    const urls = [keyboardFile, handFile].map(URL.createObjectURL);
+
+    mergeImages(urls).then(setMergeUrl);
   }, [keyboardFile, handFile]);
 
-  const handleKeyboardFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setKeyboardFile(file);
-    }
-  };
+  const handleExport = () => {
+    if (!mergeUrl) return;
 
-  const handleHandFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setHandFile(file);
-    }
-  };
+    const data = base64ToBlob(mergeUrl);
 
-  const handleDownload = () => {
-    if (!mergedImage) return;
-
-    const a = document.createElement("a");
-    a.href = mergedImage;
-    a.download = "merged.png";
-    a.click();
-  };
-
-  const handleReset = () => {
-    setKeyboardFile(null);
-    setHandFile(null);
-    setMergedImage("");
-    if (keyboardFileRef.current) {
-      keyboardFileRef.current.value = "";
-    }
-    if (handFileRef.current) {
-      handFileRef.current.value = "";
-    }
+    fileSave(data);
   };
 
   return (
-    <div className="flex gap-4">
-      <Form>
-        <Card>
-          <CardHeader>
-            将部分转换存在问题的键盘与手部图片手动进行合成。
-          </CardHeader>
+    <>
+      <div className="mb-6 flex gap-6">
+        <div className="flex flex-1 flex-col gap-3">
+          <Upload onChange={setKeyboardFile} title="键盘图片" />
 
-          <Divider />
+          <Upload onChange={setHandFile} title="手部图片" />
+        </div>
 
-          <CardBody className="flex flex-col gap-4">
-            {/* 键盘上传 */}
-            <div
-              className="cursor-pointer"
-              onClick={() => keyboardFileRef.current?.click()}
-            >
-              <Input
-                isRequired
-                label="键盘"
-                name="keyboard"
-                placeholder="请选择键盘图片"
-                readOnly
-                value={keyboardFile?.name || ""}
-              />
-            </div>
-            <input
-              accept="image/*"
-              onChange={handleKeyboardFileChange}
-              ref={keyboardFileRef}
-              style={{ display: "none" }}
-              type="file"
-            />
+        <div className="flex flex-1 items-center justify-center rounded-xl bg-foreground-100">
+          {mergeUrl ? (
+            <img alt="mergeUrl" src={mergeUrl} />
+          ) : (
+            "上传之后预览合成的图片"
+          )}
+        </div>
+      </div>
 
-            {/* 手部上传 */}
-            <div
-              className="cursor-pointer"
-              onClick={() => handFileRef.current?.click()}
-            >
-              <Input
-                isRequired
-                label="手部"
-                name="hand"
-                placeholder="请选择手部图片"
-                readOnly
-                value={handFile?.name || ""}
-              />
-            </div>
-            <input
-              accept="image/*"
-              onChange={handleHandFileChange}
-              ref={handFileRef}
-              style={{ display: "none" }}
-              type="file"
-            />
-          </CardBody>
-
-          <Divider />
-
-          <CardFooter className="flex justify-end gap-4">
-            {mergedImage && (
-              <Button color="primary" onPress={handleDownload} type="button">
-                下载
-              </Button>
-            )}
-            <Button color="default" onPress={handleReset} type="button">
-              重置
-            </Button>
-          </CardFooter>
-        </Card>
-      </Form>
-
-      {mergedImage && (
-        <Card className="w-50">
-          <CardHeader>合成结果</CardHeader>
-
-          <CardBody>
-            <img alt="merged" src={mergedImage} />
-          </CardBody>
-        </Card>
-      )}
-    </div>
+      <Button
+        color="primary"
+        isDisabled={!keyboardFile || !handFile}
+        onPress={handleExport}
+        size="lg"
+      >
+        导出
+      </Button>
+    </>
   );
 };
 

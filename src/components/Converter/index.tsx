@@ -26,7 +26,7 @@ import {
   RIGHT_KEYS_DIR_NAME,
 } from "@/constants";
 import type { ConfigSchema } from "@/types";
-import { base64ToArrayBuffer } from "@/utils/binary";
+import { base64ToBlob } from "@/utils/binary";
 import { join, writeFile } from "@/utils/fsExtra";
 import { keyMap } from "@/utils/keyMap";
 
@@ -155,7 +155,7 @@ const Converter = () => {
                 outputDir,
                 join(RESOURCES_NAME, LEFT_KEYS_DIR_NAME, `${keyMap[key]}.png`),
               );
-              const data = base64ToArrayBuffer(base64);
+              const data = base64ToBlob(base64);
 
               await writeFile(rootDir.handle, path, data);
             }
@@ -194,7 +194,7 @@ const Converter = () => {
                 outputDir,
                 join(RESOURCES_NAME, LEFT_KEYS_DIR_NAME, `${keyMap[key]}.png`),
               );
-              const data = base64ToArrayBuffer(base64);
+              const data = base64ToBlob(base64);
 
               await writeFile(rootDir.handle, path, data);
             }
@@ -223,7 +223,7 @@ const Converter = () => {
                 outputDir,
                 join(RESOURCES_NAME, RIGHT_KEYS_DIR_NAME, `${keyMap[key]}.png`),
               );
-              const data = base64ToArrayBuffer(base64);
+              const data = base64ToBlob(base64);
 
               await writeFile(rootDir.handle, path, data);
             }
