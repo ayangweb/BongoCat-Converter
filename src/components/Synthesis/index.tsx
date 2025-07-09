@@ -8,8 +8,12 @@ import {
   Form,
   Input,
 } from "@heroui/react";
+import { useRef } from "react";
 
 const Synthesis = () => {
+  const keyboardFileRef = useRef<HTMLInputElement>(null);
+  const handFileRef = useRef<HTMLInputElement>(null);
+
   return (
     <Form>
       <Card>
@@ -20,9 +24,23 @@ const Synthesis = () => {
         <Divider />
 
         <CardBody className="flex flex-col gap-4">
-          <Input isRequired label="键盘" name="keyboard" type="file" />
+          <Input
+            isRequired
+            label="键盘"
+            name="keyboard"
+            onFocus={() => keyboardFileRef.current?.click()}
+            ref={keyboardFileRef}
+            type="file"
+          />
 
-          <Input isRequired label="手部" name="hand" type="file" />
+          <Input
+            isRequired
+            label="手部"
+            name="hand"
+            onFocus={() => handFileRef.current?.click()}
+            ref={handFileRef}
+            type="file"
+          />
         </CardBody>
 
         <Divider />
