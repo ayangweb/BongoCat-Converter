@@ -23,6 +23,7 @@ import {
   OUTPUT_BG_NAME,
   OUTPUT_COVER_NAME,
   RESOURCES_NAME,
+  RIGHT_KEYS_DIR_NAME,
 } from "@/constants";
 import type { ConfigSchema } from "@/types";
 import { base64ToArrayBuffer } from "@/utils/binary";
@@ -147,7 +148,9 @@ const Converter = () => {
             return handle.webkitRelativePath.includes(`${mode}/hand`);
           });
 
-          for (const [index, [key]] of configSchema.standard.hand.entries()) {
+          for (const item of configSchema.standard.hand.entries()) {
+            const [index, [key]] = item;
+
             const keyboardHandle = find(keyboardHandles, {
               name: `${index}.png`,
             });
@@ -167,6 +170,74 @@ const Converter = () => {
               const path = join(
                 outputDir,
                 join(RESOURCES_NAME, LEFT_KEYS_DIR_NAME, `${keyMap[key]}.png`),
+              );
+              const data = base64ToArrayBuffer(base64);
+
+              await writeFile(rootDir.handle, path, data);
+            }
+          }
+        }
+
+        if (mode === MODE.KEYBOARD) {
+          const leftHandHandles = handles.filter((handle) => {
+            return handle.webkitRelativePath.includes(`${mode}/lefthand`);
+          });
+
+          const rightHandHandles = handles.filter((handle) => {
+            return handle.webkitRelativePath.includes(`${mode}/righthand`);
+          });
+
+          for (const item of configSchema.keyboard.lefthand.entries()) {
+            const [index, [key]] = item;
+
+            const keyboardHandle = find(keyboardHandles, {
+              name: `${index}.png`,
+            });
+            const handHandle = find(leftHandHandles, {
+              name: `${index}.png`,
+            });
+
+            if (keyboardHandle && handHandle) {
+              const data1 = await keyboardHandle.arrayBuffer();
+              const data2 = await handHandle.arrayBuffer();
+              const blob1 = new Blob([data1], { type: "image/png" });
+              const blob2 = new Blob([data2], { type: "image/png" });
+              const url1 = URL.createObjectURL(blob1);
+              const url2 = URL.createObjectURL(blob2);
+              const base64 = await mergeImages([url1, url2]);
+
+              const path = join(
+                outputDir,
+                join(RESOURCES_NAME, LEFT_KEYS_DIR_NAME, `${keyMap[key]}.png`),
+              );
+              const data = base64ToArrayBuffer(base64);
+
+              await writeFile(rootDir.handle, path, data);
+            }
+          }
+
+          for (const item of configSchema.keyboard.righthand.entries()) {
+            const [index, [key]] = item;
+
+            const keyboardHandle = find(keyboardHandles, {
+              name: `${configSchema.keyboard.lefthand.length + index}.png`,
+            });
+            const handHandle = find(rightHandHandles, {
+              name: `${index}.png`,
+            });
+
+            if (keyboardHandle && handHandle) {
+              const data1 = await keyboardHandle.arrayBuffer();
+              const data2 = await handHandle.arrayBuffer();
+              const blob1 = new Blob([data1], { type: "image/png" });
+              const blob2 = new Blob([data2], { type: "image/png" });
+              const url1 = URL.createObjectURL(blob1);
+              const url2 = URL.createObjectURL(blob2);
+              const base64 = await mergeImages([url1, url2]);
+
+              const path = join(
+                outputDir,
+                join(RESOURCES_NAME, RIGHT_KEYS_DIR_NAME, `${keyMap[key]}.png`),
               );
               const data = base64ToArrayBuffer(base64);
 
