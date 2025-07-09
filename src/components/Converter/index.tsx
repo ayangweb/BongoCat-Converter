@@ -89,6 +89,8 @@ const Converter = () => {
 
       setHandles(handles);
     } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+
       addToast({
         color: "danger",
         title: String(error),
