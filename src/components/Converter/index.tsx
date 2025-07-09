@@ -384,7 +384,7 @@ const Converter = () => {
         onPress={handleConvert}
         size="lg"
       >
-        {loading ? "正在转换..." : "开始转换"}
+        转换
       </Button>
     </>
   );
