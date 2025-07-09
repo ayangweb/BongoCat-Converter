@@ -1,5 +1,6 @@
 import { Button } from "@heroui/react";
 import { fileSave } from "browser-fs-access";
+import { Image } from "lucide-react";
 import mergeImages from "merge-images";
 import { useEffect, useState } from "react";
 import { base64ToBlob } from "@/utils/binary";
@@ -37,11 +38,15 @@ const Synthesis = () => {
           <Upload onChange={setHandFile} title="手部图片" />
         </div>
 
-        <div className="flex flex-1 items-center justify-center rounded-xl bg-foreground-100">
+        <div className="relative flex flex-1 items-center justify-center rounded-xl bg-foreground-100">
           {mergeUrl ? (
-            <img alt="mergeUrl" src={mergeUrl} />
+            <img
+              alt="合成的图片"
+              className="absolute size-full object-contain"
+              src={mergeUrl}
+            />
           ) : (
-            "上传之后预览合成的图片"
+            <Image className="size-12 text-foreground-400" />
           )}
         </div>
       </div>
