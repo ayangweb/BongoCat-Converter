@@ -1,5 +1,4 @@
 import { addToast, Button, Checkbox, CheckboxGroup } from "@heroui/react";
-import { decode } from "base64-arraybuffer";
 import {
   directoryOpen,
   type FileWithDirectoryAndFileHandle,
@@ -26,6 +25,7 @@ import {
   RESOURCES_NAME,
 } from "@/constants";
 import type { ConfigSchema } from "@/types";
+import { base64ToArrayBuffer } from "@/utils/binary";
 import { join, safeRemoveEntry, writeFile } from "@/utils/fsExtra";
 import { keyMap } from "@/utils/keyMap";
 
@@ -168,7 +168,7 @@ const Converter = () => {
                 outputDir,
                 join(RESOURCES_NAME, LEFT_KEYS_DIR_NAME, `${keyMap[key]}.png`),
               );
-              const data = decode(base64.replace("data:image/png;base64,", ""));
+              const data = base64ToArrayBuffer(base64);
 
               await writeFile(rootDir.handle, path, data);
             }

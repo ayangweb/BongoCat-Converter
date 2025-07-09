@@ -20,9 +20,6 @@ importers:
       '@heroui/use-theme':
         specifier: 2.1.9-beta.1
         version: 2.1.9-beta.1(react@18.3.1)
-      base64-arraybuffer:
-        specifier: ^1.0.2
-        version: 1.0.2
       browser-fs-access:
         specifier: ^0.38.0
         version: 0.38.0
@@ -2046,10 +2043,6 @@ packages:
 
   array-ify@1.0.0:
     resolution: {integrity: sha512-c5AMf34bKdvPhQ7tBGhqkgKNUzMr4WUs+WDtC2ZUGOUncbxKMTvqxYctiseW3+L4bA8ec+GcZ6/A/FW4m8ukng==}
-
-  base64-arraybuffer@1.0.2:
-    resolution: {integrity: sha512-I3yl4r9QB5ZRY3XuJVEPfc2XhZO6YweFPI+UovAzn+8/hb3oJ6lnysaFcjVpkCPfVWFUDvoZ8kmVDP7WyRtYtQ==}
-    engines: {node: '>= 0.6.0'}
 
   braces@3.0.3:
     resolution: {integrity: sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==}
@@ -5768,8 +5761,6 @@ snapshots:
   argparse@2.0.1: {}
 
   array-ify@1.0.0: {}
-
-  base64-arraybuffer@1.0.2: {}
 
   braces@3.0.3:
     dependencies:
