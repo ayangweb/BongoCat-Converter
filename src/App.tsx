@@ -38,7 +38,7 @@ const App = () => {
     <>
       <Navbar />
 
-      <div className="container m-auto px-6 py-8 text-center">
+      <div className="m-auto max-w-7xl px-6 py-8 text-center">
         <h1 className="mb-4 font-bold text-3xl">
           欢迎使用 {APP_NAME} 模型转换工具
         </h1>
