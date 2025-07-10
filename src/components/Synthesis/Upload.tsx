@@ -71,8 +71,8 @@ const Upload: FC<UploadProps> = (props) => {
   return (
     <label
       className={clsx(
-        "cursor-pointer rounded-xl border border-default border-dashed p-8 transition hover:border-primary",
-        { "border-primary": isDragOver },
+        "cursor-pointer rounded-xl border border-default border-dashed p-8 transition hover:border-primary hover:bg-primary-50",
+        { "border-primary bg-primary-50": isDragOver },
       )}
       draggable
       onDragLeave={handleDragLeave}
