@@ -1,16 +1,16 @@
 import type { keyMap } from "@/utils/keyMap";
 
-type KeyCode = keyof typeof keyMap;
+export type ConfigMatrix = (keyof typeof keyMap)[][];
 
 export type StandardConfig = {
-  hand: KeyCode[][];
-  keyboard: KeyCode[][];
+  hand: ConfigMatrix;
+  keyboard: ConfigMatrix;
 };
 
 export type SharedConfig = {
-  lefthand: KeyCode[][];
-  righthand: KeyCode[][];
-  keyboard: KeyCode[][];
+  lefthand: ConfigMatrix;
+  righthand: ConfigMatrix;
+  keyboard: ConfigMatrix;
 };
 
 export interface ConfigSchema {

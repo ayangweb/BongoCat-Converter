@@ -165,6 +165,8 @@ const Converter = () => {
         }
 
         if (mode === MODE.KEYBOARD) {
+          const { lefthand, righthand } = configSchema.keyboard;
+
           const leftHandHandles = handles.filter((handle) => {
             return handle.webkitRelativePath.includes(
               `${mode}/${SOURCE_DIR.LEFT_HAND}`,
@@ -177,7 +179,7 @@ const Converter = () => {
             );
           });
 
-          for (const item of configSchema.keyboard.lefthand.entries()) {
+          for (const item of lefthand.entries()) {
             const [index, [key]] = item;
 
             const keyboardHandle = find(keyboardHandles, {
@@ -210,11 +212,11 @@ const Converter = () => {
             }
           }
 
-          for (const item of configSchema.keyboard.righthand.entries()) {
+          for (const item of righthand.entries()) {
             const [index, [key]] = item;
 
             const keyboardHandle = find(keyboardHandles, {
-              name: `${configSchema.keyboard.lefthand.length + index}.png`,
+              name: `${lefthand.length + index}.png`,
             });
             const handHandle = find(rightHandHandles, {
               name: `${index}.png`,
