@@ -32,7 +32,7 @@ const Synthesis = () => {
   return (
     <>
       <div className="mb-6 flex gap-6">
-        <div className="flex flex-1 flex-col gap-3">
+        <div className="flex flex-1 flex-col gap-6">
           <Upload
             description="单击或拖动文件到此区域进行上传。"
             icon={ImageUp}
