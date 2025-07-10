@@ -141,14 +141,6 @@ const Converter = () => {
             });
 
             if (keyboardHandle && handHandle) {
-              const data1 = await keyboardHandle.arrayBuffer();
-              const data2 = await handHandle.arrayBuffer();
-              const blob1 = new Blob([data1], { type: "image/png" });
-              const blob2 = new Blob([data2], { type: "image/png" });
-              const url1 = URL.createObjectURL(blob1);
-              const url2 = URL.createObjectURL(blob2);
-              const base64 = await mergeImages([url1, url2]);
-
               const path = join(
                 outputDir,
                 join(
@@ -157,7 +149,7 @@ const Converter = () => {
                   `${keyMap[key]}.png`,
                 ),
               );
-              const data = base64ToBlob(base64);
+              const data = await convertImages(keyboardHandle, handHandle);
 
               await writeFile(rootDir.handle, path, data);
             }
@@ -190,14 +182,6 @@ const Converter = () => {
             });
 
             if (keyboardHandle && handHandle) {
-              const data1 = await keyboardHandle.arrayBuffer();
-              const data2 = await handHandle.arrayBuffer();
-              const blob1 = new Blob([data1], { type: "image/png" });
-              const blob2 = new Blob([data2], { type: "image/png" });
-              const url1 = URL.createObjectURL(blob1);
-              const url2 = URL.createObjectURL(blob2);
-              const base64 = await mergeImages([url1, url2]);
-
               const path = join(
                 outputDir,
                 join(
@@ -206,7 +190,7 @@ const Converter = () => {
                   `${keyMap[key]}.png`,
                 ),
               );
-              const data = base64ToBlob(base64);
+              const data = await convertImages(keyboardHandle, handHandle);
 
               await writeFile(rootDir.handle, path, data);
             }
@@ -223,14 +207,6 @@ const Converter = () => {
             });
 
             if (keyboardHandle && handHandle) {
-              const data1 = await keyboardHandle.arrayBuffer();
-              const data2 = await handHandle.arrayBuffer();
-              const blob1 = new Blob([data1], { type: "image/png" });
-              const blob2 = new Blob([data2], { type: "image/png" });
-              const url1 = URL.createObjectURL(blob1);
-              const url2 = URL.createObjectURL(blob2);
-              const base64 = await mergeImages([url1, url2]);
-
               const path = join(
                 outputDir,
                 join(
@@ -239,7 +215,7 @@ const Converter = () => {
                   `${keyMap[key]}.png`,
                 ),
               );
-              const data = base64ToBlob(base64);
+              const data = await convertImages(keyboardHandle, handHandle);
 
               await writeFile(rootDir.handle, path, data);
             }
@@ -315,6 +291,25 @@ const Converter = () => {
     const data = await handle.arrayBuffer();
 
     return writeFile(rootDir.handle, path, data);
+  };
+
+  // 转换键盘和手部图片
+  const convertImages = async (
+    keyboardHandle: FileWithDirectoryAndFileHandle,
+    handHandle: FileWithDirectoryAndFileHandle,
+  ) => {
+    const keyboardBuffer = await keyboardHandle.arrayBuffer();
+    const handBuffer = await handHandle.arrayBuffer();
+
+    const blobs = [keyboardBuffer, handBuffer].map((buffer) => {
+      return new Blob([buffer], { type: "image/png" });
+    });
+
+    const urls = blobs.map(URL.createObjectURL);
+
+    const base64 = await mergeImages(urls);
+
+    return base64ToBlob(base64);
   };
 
   return (
