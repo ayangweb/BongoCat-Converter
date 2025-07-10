@@ -3,11 +3,9 @@ import {
   directoryOpen,
   type FileWithDirectoryAndFileHandle,
 } from "browser-fs-access";
-import clsx from "clsx";
 import { last, noop, sum } from "es-toolkit";
 import { find, map } from "es-toolkit/compat";
-import { filesize } from "filesize";
-import { Folder, FolderOpen, Gamepad2, Keyboard, Mouse, X } from "lucide-react";
+import { Folder, FolderOpen, Gamepad2, Keyboard, Mouse } from "lucide-react";
 import mergeImages from "merge-images";
 import { cloneElement, useState } from "react";
 import {
@@ -29,10 +27,11 @@ import type { ConfigSchema } from "@/types";
 import { base64ToBlob } from "@/utils/binary";
 import { join, writeFile } from "@/utils/fsExtra";
 import { keyMap } from "@/utils/keyMap";
+import Upload from "../Upload";
 
 interface RootDir {
   name: string;
-  size: string;
+  size: number;
   handle: FileSystemDirectoryHandle;
 }
 
@@ -81,11 +80,10 @@ const Converter = () => {
       setConfigSchema(JSON.parse(configText));
 
       const rootHandle = configHandle.directoryHandle!;
-      const dirSize = sum(map(handles, "size"));
       setRootDir({
         handle: rootHandle,
         name: rootHandle.name,
-        size: filesize(dirSize),
+        size: sum(map(handles, "size")),
       });
 
       setHandles(handles);
@@ -305,47 +303,17 @@ const Converter = () => {
 
   return (
     <>
-      <div
-        className={clsx(
-          "cursor-pointer rounded-lg border-2 border-default p-8 transition hover:border-primary hover:bg-primary-50",
-          {
-            "pointer-events-none opacity-50": loading,
-          },
-        )}
-        onClick={handleSelect}
-      >
-        {rootDir ? (
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Folder className="size-8 text-primary" />
-
-              <div className="flex flex-col gap-1">
-                <span className="font-bold">{rootDir.name}</span>
-                <span className="text-foreground-500">{rootDir.size}</span>
-              </div>
-            </div>
-
-            <Button
-              color="danger"
-              isIconOnly
-              onPress={handleDeselect}
-              variant="light"
-            >
-              <X className="size-5" />
-            </Button>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center gap-4">
-            <FolderOpen className="size-10 text-primary" />
-
-            <h3 className="font-semibold text-lg">选择应用文件夹</h3>
-
-            <p className="text-foreground-500">
-              {`请选择完整的 ${LEGACY_APP_NAME} 应用文件夹，其子目录中应包含 ${CONFIG_FILE_NAME} 文件。`}
-            </p>
-          </div>
-        )}
-      </div>
+      <Upload
+        classNames={{ root: "border-2" }}
+        description={`请选择完整的 ${LEGACY_APP_NAME} 应用文件夹，其子目录中应包含 ${CONFIG_FILE_NAME} 文件。`}
+        draggable={false}
+        icon={FolderOpen}
+        onDeselect={handleDeselect}
+        onPress={handleSelect}
+        selectedIcon={Folder}
+        selectedItem={rootDir}
+        title="选择应用文件夹"
+      />
 
       <CheckboxGroup
         className="my-6"

@@ -1,10 +1,10 @@
 import { Button } from "@heroui/react";
 import { fileSave } from "browser-fs-access";
-import { Image } from "lucide-react";
+import { Image, ImageUp } from "lucide-react";
 import mergeImages from "merge-images";
 import { useEffect, useState } from "react";
 import { base64ToBlob } from "@/utils/binary";
-import Upload from "./Upload";
+import Upload from "../Upload";
 
 const Synthesis = () => {
   const [keyboardFile, setKeyboardFile] = useState<File>();
@@ -33,9 +33,25 @@ const Synthesis = () => {
     <>
       <div className="mb-6 flex gap-6">
         <div className="flex flex-1 flex-col gap-3">
-          <Upload onChange={setKeyboardFile} title="键盘图片" />
+          <Upload
+            description="单击或拖动文件到此区域进行上传。"
+            icon={ImageUp}
+            onDeselect={() => setKeyboardFile(void 0)}
+            onSelect={setKeyboardFile}
+            selectedIcon={Image}
+            selectedItem={keyboardFile}
+            title="键盘图片"
+          />
 
-          <Upload onChange={setHandFile} title="手部图片" />
+          <Upload
+            description="单击或拖动文件到此区域进行上传。"
+            icon={ImageUp}
+            onDeselect={() => setHandFile(void 0)}
+            onSelect={setHandFile}
+            selectedIcon={Image}
+            selectedItem={handFile}
+            title="手部图片"
+          />
         </div>
 
         <div className="relative flex flex-1 items-center justify-center rounded-xl bg-foreground-100">
