@@ -16,24 +16,32 @@ export const MODE_CN = {
   [MODE.STANDARD]: "标准模式",
 };
 
-export const CONFIG_FILE_NAME = "config.json";
+export const SOURCE_FILE = {
+  CONFIG: "config.json",
+  COVER: "cat.png",
+};
 
-export const MODEL_DIR_NAME = "cat_model";
-
-export const RESOURCES_NAME = "resources";
-
-export const ORIGINAL_BG_NAME = {
+export const SOURCE_BG_FILE = {
   [MODE.GAMEPAD]: "bg.png",
   [MODE.KEYBOARD]: "bg.png",
   [MODE.STANDARD]: "mousebg.png",
 };
 
-export const OUTPUT_BG_NAME = "background.png";
+export const SOURCE_DIR = {
+  HAND: "hand",
+  KEYBOARD: "keyboard",
+  LEFT_HAND: "lefthand",
+  MODEL: "cat_model",
+  RIGHT_HAND: "righthand",
+};
 
-export const ORIGINAL_COVER_NAME = "cat.png";
+export const OUTPUT_FILE = {
+  BG: "background.png",
+  COVER: "cover.png",
+};
 
-export const OUTPUT_COVER_NAME = "cover.png";
-
-export const LEFT_KEYS_DIR_NAME = "left-keys";
-
-export const RIGHT_KEYS_DIR_NAME = "right-keys";
+export const OUTPUT_DIR = {
+  LEFT_KEYS: "left-keys",
+  RESOURCES: "resources",
+  RIGHT_KEYS: "right-keys",
+};

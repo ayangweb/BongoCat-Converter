@@ -8,7 +8,7 @@
   "[typescriptreact]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
-  "cSpell.words": ["lefthand", "righthand"],
+  "cSpell.words": ["lefthand", "mousebg", "righthand"],
   "editor.codeActionsOnSave": {
     "source.fixAll.biome": "explicit"
   },

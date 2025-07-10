@@ -10,18 +10,14 @@ import mergeImages from "merge-images";
 import { cloneElement, useState } from "react";
 import {
   APP_NAME,
-  CONFIG_FILE_NAME,
-  LEFT_KEYS_DIR_NAME,
   LEGACY_APP_NAME,
   MODE,
   MODE_CN,
-  MODEL_DIR_NAME,
-  ORIGINAL_BG_NAME,
-  ORIGINAL_COVER_NAME,
-  OUTPUT_BG_NAME,
-  OUTPUT_COVER_NAME,
-  RESOURCES_NAME,
-  RIGHT_KEYS_DIR_NAME,
+  OUTPUT_DIR,
+  OUTPUT_FILE,
+  SOURCE_BG_FILE,
+  SOURCE_DIR,
+  SOURCE_FILE,
 } from "@/constants";
 import type { ConfigSchema } from "@/types";
 import { base64ToBlob } from "@/utils/binary";
@@ -67,12 +63,12 @@ const Converter = () => {
         recursive: true,
       });
 
-      const configHandle = find(handles, { name: CONFIG_FILE_NAME });
+      const configHandle = find(handles, { name: SOURCE_FILE.CONFIG });
 
       if (!configHandle) {
         return addToast({
           color: "danger",
-          title: `未找到 ${CONFIG_FILE_NAME} 文件，请选择正确的应用文件夹。`,
+          title: `未找到 ${SOURCE_FILE.CONFIG} 文件，请选择正确的应用文件夹。`,
         });
       }
 
@@ -122,12 +118,16 @@ const Converter = () => {
         ]);
 
         const keyboardHandles = handles.filter((handle) => {
-          return handle.webkitRelativePath.includes(`${mode}/keyboard`);
+          return handle.webkitRelativePath.includes(
+            `${mode}/${SOURCE_DIR.KEYBOARD}`,
+          );
         });
 
         if (mode === MODE.STANDARD) {
           const handHandles = handles.filter((handle) => {
-            return handle.webkitRelativePath.includes(`${mode}/hand`);
+            return handle.webkitRelativePath.includes(
+              `${mode}/${SOURCE_DIR.HAND}`,
+            );
           });
 
           for (const item of configSchema.standard.hand.entries()) {
@@ -151,7 +151,11 @@ const Converter = () => {
 
               const path = join(
                 outputDir,
-                join(RESOURCES_NAME, LEFT_KEYS_DIR_NAME, `${keyMap[key]}.png`),
+                join(
+                  OUTPUT_DIR.RESOURCES,
+                  OUTPUT_DIR.LEFT_KEYS,
+                  `${keyMap[key]}.png`,
+                ),
               );
               const data = base64ToBlob(base64);
 
@@ -162,11 +166,15 @@ const Converter = () => {
 
         if (mode === MODE.KEYBOARD) {
           const leftHandHandles = handles.filter((handle) => {
-            return handle.webkitRelativePath.includes(`${mode}/lefthand`);
+            return handle.webkitRelativePath.includes(
+              `${mode}/${SOURCE_DIR.LEFT_HAND}`,
+            );
           });
 
           const rightHandHandles = handles.filter((handle) => {
-            return handle.webkitRelativePath.includes(`${mode}/righthand`);
+            return handle.webkitRelativePath.includes(
+              `${mode}/${SOURCE_DIR.RIGHT_HAND}`,
+            );
           });
 
           for (const item of configSchema.keyboard.lefthand.entries()) {
@@ -190,7 +198,11 @@ const Converter = () => {
 
               const path = join(
                 outputDir,
-                join(RESOURCES_NAME, LEFT_KEYS_DIR_NAME, `${keyMap[key]}.png`),
+                join(
+                  OUTPUT_DIR.RESOURCES,
+                  OUTPUT_DIR.LEFT_KEYS,
+                  `${keyMap[key]}.png`,
+                ),
               );
               const data = base64ToBlob(base64);
 
@@ -219,7 +231,11 @@ const Converter = () => {
 
               const path = join(
                 outputDir,
-                join(RESOURCES_NAME, RIGHT_KEYS_DIR_NAME, `${keyMap[key]}.png`),
+                join(
+                  OUTPUT_DIR.RESOURCES,
+                  OUTPUT_DIR.RIGHT_KEYS,
+                  `${keyMap[key]}.png`,
+                ),
               );
               const data = base64ToBlob(base64);
 
@@ -253,12 +269,12 @@ const Converter = () => {
     if (!rootDir) return;
 
     const filterHandles = handles.filter((handle) => {
-      return handle.webkitRelativePath.includes(join(mode, MODEL_DIR_NAME));
+      return handle.webkitRelativePath.includes(join(mode, SOURCE_DIR.MODEL));
     });
 
     for await (const handle of filterHandles) {
       const originalPath = last(
-        handle.webkitRelativePath.split(MODEL_DIR_NAME),
+        handle.webkitRelativePath.split(SOURCE_DIR.MODEL),
       )!;
       const path = join(outputDir, originalPath);
       const data = await handle.arrayBuffer();
@@ -272,14 +288,12 @@ const Converter = () => {
     if (!rootDir) return;
 
     const handle = handles.find((item) => {
-      return item.webkitRelativePath.includes(
-        join(mode, ORIGINAL_BG_NAME[mode]),
-      );
+      return item.webkitRelativePath.includes(join(mode, SOURCE_BG_FILE[mode]));
     });
 
     if (!handle) return;
 
-    const path = join(outputDir, RESOURCES_NAME, OUTPUT_BG_NAME);
+    const path = join(outputDir, OUTPUT_DIR.RESOURCES, OUTPUT_FILE.BG);
     const data = await handle.arrayBuffer();
 
     return writeFile(rootDir.handle, path, data);
@@ -290,12 +304,12 @@ const Converter = () => {
     if (!rootDir) return;
 
     const handle = handles.find((item) => {
-      return item.webkitRelativePath.includes(join(mode, ORIGINAL_COVER_NAME));
+      return item.webkitRelativePath.includes(join(mode, SOURCE_FILE.COVER));
     });
 
     if (!handle) return;
 
-    const path = join(outputDir, RESOURCES_NAME, OUTPUT_COVER_NAME);
+    const path = join(outputDir, OUTPUT_DIR.RESOURCES, OUTPUT_FILE.COVER);
     const data = await handle.arrayBuffer();
 
     return writeFile(rootDir.handle, path, data);
@@ -305,7 +319,7 @@ const Converter = () => {
     <>
       <Upload
         classNames={{ root: "border-2" }}
-        description={`请选择完整的 ${LEGACY_APP_NAME} 应用文件夹，其子目录中应包含 ${CONFIG_FILE_NAME} 文件。`}
+        description={`请选择完整的 ${LEGACY_APP_NAME} 应用文件夹，其子目录中应包含 ${SOURCE_FILE.CONFIG} 文件。`}
         draggable={false}
         icon={FolderOpen}
         onDeselect={handleDeselect}
