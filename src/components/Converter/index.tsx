@@ -19,7 +19,7 @@ import {
   SOURCE_DIR,
   SOURCE_FILE,
 } from "@/constants";
-import type { ConfigSchema } from "@/types";
+import type { ConfigMatrix, ConfigSchema } from "@/types";
 import { base64ToBlob } from "@/utils/binary";
 import { join, writeFile } from "@/utils/fsExtra";
 import { keyMap } from "@/utils/keyMap";
@@ -29,6 +29,15 @@ interface RootDir {
   name: string;
   size: number;
   handle: FileSystemDirectoryHandle;
+}
+
+interface ProcessImagePairsParams {
+  mode: string;
+  outputDir: string;
+  keysDir?: string;
+  sourceHandDir: string;
+  handConfig: ConfigMatrix;
+  getKeyboardName?: (index: number) => string;
 }
 
 const Converter = () => {
@@ -117,109 +126,33 @@ const Converter = () => {
           copyCoverImage(mode, outputDir),
         ]);
 
-        const keyboardHandles = handles.filter((handle) => {
-          return handle.webkitRelativePath.includes(
-            `${mode}/${SOURCE_DIR.KEYBOARD}`,
-          );
-        });
-
         if (mode === MODE.STANDARD) {
-          const handHandles = handles.filter((handle) => {
-            return handle.webkitRelativePath.includes(
-              `${mode}/${SOURCE_DIR.HAND}`,
-            );
+          await processImagePairs({
+            handConfig: configSchema.standard.hand,
+            mode,
+            outputDir,
+            sourceHandDir: SOURCE_DIR.HAND,
           });
-
-          for (const item of configSchema.standard.hand.entries()) {
-            const [index, [key]] = item;
-
-            const keyboardHandle = find(keyboardHandles, {
-              name: `${index}.png`,
-            });
-            const handHandle = find(handHandles, {
-              name: `${index}.png`,
-            });
-
-            if (keyboardHandle && handHandle) {
-              const path = join(
-                outputDir,
-                join(
-                  OUTPUT_DIR.RESOURCES,
-                  OUTPUT_DIR.LEFT_KEYS,
-                  `${keyMap[key]}.png`,
-                ),
-              );
-              const data = await convertImages(keyboardHandle, handHandle);
-
-              await writeFile(rootDir.handle, path, data);
-            }
-          }
         }
 
         if (mode === MODE.KEYBOARD) {
           const { lefthand, righthand } = configSchema.keyboard;
 
-          const leftHandHandles = handles.filter((handle) => {
-            return handle.webkitRelativePath.includes(
-              `${mode}/${SOURCE_DIR.LEFT_HAND}`,
-            );
+          await processImagePairs({
+            handConfig: lefthand,
+            mode,
+            outputDir,
+            sourceHandDir: SOURCE_DIR.LEFT_HAND,
           });
 
-          const rightHandHandles = handles.filter((handle) => {
-            return handle.webkitRelativePath.includes(
-              `${mode}/${SOURCE_DIR.RIGHT_HAND}`,
-            );
+          await processImagePairs({
+            getKeyboardName: (index) => `${lefthand.length + index}.png`,
+            handConfig: righthand,
+            keysDir: OUTPUT_DIR.RIGHT_KEYS,
+            mode,
+            outputDir,
+            sourceHandDir: SOURCE_DIR.RIGHT_HAND,
           });
-
-          for (const item of lefthand.entries()) {
-            const [index, [key]] = item;
-
-            const keyboardHandle = find(keyboardHandles, {
-              name: `${index}.png`,
-            });
-            const handHandle = find(leftHandHandles, {
-              name: `${index}.png`,
-            });
-
-            if (keyboardHandle && handHandle) {
-              const path = join(
-                outputDir,
-                join(
-                  OUTPUT_DIR.RESOURCES,
-                  OUTPUT_DIR.LEFT_KEYS,
-                  `${keyMap[key]}.png`,
-                ),
-              );
-              const data = await convertImages(keyboardHandle, handHandle);
-
-              await writeFile(rootDir.handle, path, data);
-            }
-          }
-
-          for (const item of righthand.entries()) {
-            const [index, [key]] = item;
-
-            const keyboardHandle = find(keyboardHandles, {
-              name: `${lefthand.length + index}.png`,
-            });
-            const handHandle = find(rightHandHandles, {
-              name: `${index}.png`,
-            });
-
-            if (keyboardHandle && handHandle) {
-              const path = join(
-                outputDir,
-                join(
-                  OUTPUT_DIR.RESOURCES,
-                  OUTPUT_DIR.RIGHT_KEYS,
-                  `${keyMap[key]}.png`,
-                ),
-              );
-              const data = await convertImages(keyboardHandle, handHandle);
-
-              await writeFile(rootDir.handle, path, data);
-            }
-          }
         }
       }
 
@@ -237,12 +170,10 @@ const Converter = () => {
     }
   };
 
-  // 删除输出目录
   const removeOutputDir = async (name: string) => {
     await rootDir?.handle.removeEntry(name, { recursive: true }).catch(noop);
   };
 
-  // 复制模型相关文件
   const copyModelFiles = async (mode: string, outputDir: string) => {
     if (!rootDir) return;
 
@@ -261,7 +192,6 @@ const Converter = () => {
     }
   };
 
-  // 复制背景图片
   const copyBgImage = async (mode: string, outputDir: string) => {
     if (!rootDir) return;
 
@@ -277,7 +207,6 @@ const Converter = () => {
     return writeFile(rootDir.handle, path, data);
   };
 
-  // 复制封面图片
   const copyCoverImage = async (mode: string, outputDir: string) => {
     if (!rootDir) return;
 
@@ -293,7 +222,51 @@ const Converter = () => {
     return writeFile(rootDir.handle, path, data);
   };
 
-  // 转换键盘和手部图片
+  const processImagePairs = async (
+    params: ProcessImagePairsParams,
+  ): Promise<void> => {
+    const {
+      mode,
+      sourceHandDir,
+      handConfig,
+      outputDir,
+      keysDir = OUTPUT_DIR.LEFT_KEYS,
+      getKeyboardName,
+    } = params;
+
+    const keyboardHandles = handles.filter((handle) => {
+      return handle.webkitRelativePath.includes(
+        join(mode, SOURCE_DIR.KEYBOARD),
+      );
+    });
+
+    const handHandles = handles.filter((handle) => {
+      return handle.webkitRelativePath.includes(join(mode, sourceHandDir));
+    });
+
+    for (const [index, [key]] of handConfig.entries()) {
+      const keyboardHandle = find(keyboardHandles, {
+        name: getKeyboardName?.(index) ?? `${index}.png`,
+      });
+      const handHandle = find(handHandles, {
+        name: `${index}.png`,
+      });
+
+      if (keyboardHandle && handHandle) {
+        const path = join(
+          outputDir,
+          join(OUTPUT_DIR.RESOURCES, keysDir, `${keyMap[key]}.png`),
+        );
+
+        const data = await convertImages(keyboardHandle, handHandle);
+
+        if (rootDir?.handle) {
+          await writeFile(rootDir.handle, path, data);
+        }
+      }
+    }
+  };
+
   const convertImages = async (
     keyboardHandle: FileWithDirectoryAndFileHandle,
     handHandle: FileWithDirectoryAndFileHandle,
