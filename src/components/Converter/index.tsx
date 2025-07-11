@@ -260,10 +260,10 @@ const Converter = () => {
         join(OUTPUT_DIR.RESOURCES, keysDir, `${keyMap[key]}.png`),
       );
 
-      if (isEmpty(keyboardHandles)) {
-        const data = await handHandle.arrayBuffer();
+      let data: ArrayBuffer | Blob;
 
-        await writeFile(rootDir?.handle, path, data);
+      if (isEmpty(keyboardHandles)) {
+        data = await handHandle.arrayBuffer();
       } else {
         const keyboardHandle = find(keyboardHandles, {
           name: getKeyboardName?.(index) ?? `${index}.png`,
@@ -271,10 +271,10 @@ const Converter = () => {
 
         if (!keyboardHandle) continue;
 
-        const data = await convertImages(keyboardHandle, handHandle);
-
-        await writeFile(rootDir.handle, path, data);
+        data = await convertImages(keyboardHandle, handHandle);
       }
+
+      await writeFile(rootDir.handle, path, data);
     }
   };
 
