@@ -4,7 +4,7 @@ import {
   type FileWithDirectoryAndFileHandle,
 } from "browser-fs-access";
 import { last, noop, sum } from "es-toolkit";
-import { find, map } from "es-toolkit/compat";
+import { find, isEmpty, map } from "es-toolkit/compat";
 import { Folder, FolderOpen, Gamepad2, Keyboard, Mouse } from "lucide-react";
 import mergeImages from "merge-images";
 import { cloneElement, useState } from "react";
@@ -127,8 +127,10 @@ const Converter = () => {
         ]);
 
         if (mode === MODE.STANDARD) {
+          const { hand } = configSchema.standard;
+
           await processImagePairs({
-            handConfig: configSchema.standard.hand,
+            handConfig: hand,
             mode,
             outputDir,
             sourceHandDir: SOURCE_DIR.HAND,
@@ -225,6 +227,8 @@ const Converter = () => {
   const processImagePairs = async (
     params: ProcessImagePairsParams,
   ): Promise<void> => {
+    if (!rootDir) return;
+
     const {
       mode,
       sourceHandDir,
@@ -245,24 +249,31 @@ const Converter = () => {
     });
 
     for (const [index, [key]] of handConfig.entries()) {
-      const keyboardHandle = find(keyboardHandles, {
-        name: getKeyboardName?.(index) ?? `${index}.png`,
-      });
       const handHandle = find(handHandles, {
         name: `${index}.png`,
       });
 
-      if (keyboardHandle && handHandle) {
-        const path = join(
-          outputDir,
-          join(OUTPUT_DIR.RESOURCES, keysDir, `${keyMap[key]}.png`),
-        );
+      if (!handHandle) continue;
+
+      const path = join(
+        outputDir,
+        join(OUTPUT_DIR.RESOURCES, keysDir, `${keyMap[key]}.png`),
+      );
+
+      if (isEmpty(keyboardHandles)) {
+        const data = await handHandle.arrayBuffer();
+
+        await writeFile(rootDir?.handle, path, data);
+      } else {
+        const keyboardHandle = find(keyboardHandles, {
+          name: getKeyboardName?.(index) ?? `${index}.png`,
+        });
+
+        if (!keyboardHandle) continue;
 
         const data = await convertImages(keyboardHandle, handHandle);
 
-        if (rootDir?.handle) {
-          await writeFile(rootDir.handle, path, data);
-        }
+        await writeFile(rootDir.handle, path, data);
       }
     }
   };
