@@ -7,12 +7,12 @@ import {
   NavbarItem,
 } from "@heroui/react";
 import { Github } from "lucide-react";
-import { APP_GITHUB_URL, APP_NAME } from "@/constants";
+import { APP_NAME, GITHUB_URL } from "@/constants";
 import Theme from "./Theme";
 
 const Navbar = () => {
   const openGithub = () => {
-    window.open(APP_GITHUB_URL);
+    window.open(GITHUB_URL);
   };
 
   return (

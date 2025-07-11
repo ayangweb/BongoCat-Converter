@@ -1,4 +1,4 @@
-export const APP_GITHUB_URL = "https://github.com/ayangweb/BongoCat";
+export const GITHUB_URL = "https://github.com/ayangweb/BongoCat-Converter";
 
 export const APP_NAME = "BongoCat";
 
