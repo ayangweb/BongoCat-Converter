@@ -11,7 +11,7 @@ export const MODE = {
 };
 
 export const MODE_CN = {
-  [MODE.GAMEPAD]: "手柄模式（敬请期待）",
+  [MODE.GAMEPAD]: "手柄模式",
   [MODE.KEYBOARD]: "键盘模式",
   [MODE.STANDARD]: "标准模式",
 };

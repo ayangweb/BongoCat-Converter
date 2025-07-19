@@ -40,5 +40,13 @@ export const writeFile = async (
 };
 
 export const join = (...paths: string[]) => {
-  return paths.map((p) => p.replace(/^\/+|\/+$/g, "")).join("/");
+  const joinPaths = paths.map((path, index) => {
+    if (index === 0) {
+      return path.replace(/\/+$/g, "");
+    } else {
+      return path.replace(/^\/+|\/+$/g, "");
+    }
+  });
+
+  return joinPaths.join("/");
 };

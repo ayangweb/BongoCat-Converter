@@ -1,4 +1,4 @@
-export const keyMap = {
+export const deviceKeyMap = {
   8: "BackSpace",
   9: "Tab",
   13: "Return",
@@ -99,4 +99,23 @@ export const keyMap = {
   220: "Backslash",
   221: "RightBracket",
   222: "Quote",
+};
+
+export const gamepadKeyMap = {
+  0: "South",
+  1: "East",
+  2: "West",
+  3: "North",
+  4: "LeftTrigger",
+  5: "RightTrigger",
+  6: "LeftTrigger2",
+  7: "RightTrigger2",
+  8: "LeftThumb",
+  9: "RightThumb",
+  10: "DPadLeft",
+  11: "DPadRight",
+  12: "DPadUp",
+  13: "DPadDown",
+  14: "Start",
+  15: "Select",
 };

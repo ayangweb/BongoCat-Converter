@@ -1,6 +1,8 @@
-import type { keyMap } from "@/utils/keyMap";
+import type { deviceKeyMap, gamepadKeyMap } from "@/utils/keyMap";
 
-export type ConfigMatrix = (keyof typeof keyMap)[][];
+export type ConfigKey = keyof typeof deviceKeyMap & keyof typeof gamepadKeyMap;
+
+export type ConfigMatrix = ConfigKey[][];
 
 export type StandardConfig = {
   hand: ConfigMatrix;

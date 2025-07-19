@@ -22,7 +22,7 @@ import {
 import type { ConfigMatrix, ConfigSchema } from "@/types";
 import { base64ToBlob } from "@/utils/binary";
 import { join, writeFile } from "@/utils/fsExtra";
-import { keyMap } from "@/utils/keyMap";
+import { deviceKeyMap, gamepadKeyMap } from "@/utils/keyMap";
 import Upload from "../Upload";
 
 interface RootDir {
@@ -60,7 +60,6 @@ const Converter = () => {
     },
     {
       icon: <Gamepad2 />,
-      isDisabled: true,
       title: MODE_CN[MODE.GAMEPAD],
       value: MODE.GAMEPAD,
     },
@@ -126,19 +125,18 @@ const Converter = () => {
           copyCoverImage(mode, outputDir),
         ]);
 
-        if (mode === MODE.STANDARD) {
-          const { hand } = configSchema.standard;
+        const { standard, keyboard, gamepad } = configSchema;
 
+        if (mode === MODE.STANDARD) {
           await processImagePairs({
-            handConfig: hand,
+            handConfig: standard.hand,
             mode,
             outputDir,
             sourceHandDir: SOURCE_DIR.HAND,
           });
-        }
-
-        if (mode === MODE.KEYBOARD) {
-          const { lefthand, righthand } = configSchema.keyboard;
+        } else {
+          const { lefthand, righthand } =
+            mode === MODE.KEYBOARD ? keyboard : gamepad;
 
           await processImagePairs({
             handConfig: lefthand,
@@ -255,6 +253,8 @@ const Converter = () => {
 
       if (!handHandle) continue;
 
+      const keyMap = mode === MODE.GAMEPAD ? gamepadKeyMap : deviceKeyMap;
+
       const path = join(
         outputDir,
         join(OUTPUT_DIR.RESOURCES, keysDir, `${keyMap[key]}.png`),
@@ -323,12 +323,11 @@ const Converter = () => {
         value={modes}
       >
         {modeOptions.map((item) => {
-          const { title, value, icon, isDisabled } = item;
+          const { title, value, icon } = item;
 
           return (
             <Checkbox
               className="m-0 max-w-[unset] flex-1 cursor-pointer items-center justify-start gap-2 rounded-lg border-2 border-transparent bg-content1 p-4 hover:bg-content2 data-[selected=true]:border-primary"
-              isDisabled={isDisabled}
               key={value}
               value={value}
             >
