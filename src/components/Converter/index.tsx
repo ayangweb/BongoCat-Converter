@@ -5,6 +5,7 @@ import {
 } from "browser-fs-access";
 import { last, noop, sum } from "es-toolkit";
 import { find, isEmpty, map } from "es-toolkit/compat";
+import JSON5 from "json5";
 import { Folder, FolderOpen, Gamepad2, Keyboard, Mouse } from "lucide-react";
 import mergeImages from "merge-images";
 import { cloneElement, useState } from "react";
@@ -81,7 +82,7 @@ const Converter = () => {
       }
 
       const configText = await configHandle.text();
-      setConfigSchema(JSON.parse(configText));
+      setConfigSchema(JSON5.parse(configText));
 
       const rootHandle = configHandle.directoryHandle!;
       setRootDir({
