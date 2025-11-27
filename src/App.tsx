@@ -95,7 +95,7 @@ const App = () => {
 
                   <Divider />
 
-                  <CardBody>{children}</CardBody>
+                  <CardBody className="overflow-hidden">{children}</CardBody>
                 </Card>
               </Tab>
             );
