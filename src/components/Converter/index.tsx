@@ -279,6 +279,16 @@ const Converter = () => {
     }
   };
 
+  const loadImage = (src: string): Promise<HTMLImageElement> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+
+      img.src = src;
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+    });
+  };
+
   const convertImages = async (
     keyboardHandle: FileWithDirectoryAndFileHandle,
     handHandle: FileWithDirectoryAndFileHandle,
@@ -292,7 +302,15 @@ const Converter = () => {
 
     const urls = blobs.map(URL.createObjectURL);
 
-    const base64 = await mergeImages(urls);
+    const [keyboardImg, handImg] = await Promise.all([
+      loadImage(urls[0]),
+      loadImage(urls[1]),
+    ]);
+
+    const base64 = await mergeImages(urls, {
+      height: Math.min(keyboardImg.height, handImg.height),
+      width: Math.min(keyboardImg.width, handImg.width),
+    });
 
     return base64ToBlob(base64);
   };
